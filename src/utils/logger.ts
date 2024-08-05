@@ -1,9 +1,9 @@
-const info = (...params: string[]) => {
+const logInfo = (...params: string[]) => {
   console.log(...params)
 }
 
-const error = (...params: string[]) => {
+const logError = (...params: string[]) => {
   console.error(...params)
 }
 
-export { info, error }
+export { logInfo, logError }
