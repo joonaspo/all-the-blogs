@@ -1,5 +1,5 @@
 import app from './app'
 import { PORT } from './utils/config'
-import { info } from './utils/logger'
+import { logInfo } from './utils/logger'
 
-app.listen(PORT, () => info(`Server started on port ${PORT}`))
+app.listen(PORT, () => logInfo(`Server started on port ${PORT}`))
