@@ -2,6 +2,7 @@ import 'dotenv/config'
 
 const PORT = process.env.PORT
 const NODE_ENV = process.env.NODE_ENV
+const SECRET = process.env.SECRET
 
 const MONGODB_URI =
   NODE_ENV === 'development'
@@ -10,4 +11,4 @@ const MONGODB_URI =
     ? process.env.TEST_DB_URI
     : process.env.DB_URI
 
-export { PORT, MONGODB_URI, NODE_ENV }
+export { PORT, MONGODB_URI, NODE_ENV, SECRET }
