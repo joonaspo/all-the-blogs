@@ -5,7 +5,7 @@ import express from 'express'
 import { SECRET } from '../utils/config'
 const loginRouter = express.Router()
 
-loginRouter.post('/login', async (req, res) => {
+loginRouter.post('/', async (req, res) => {
   const { username, password } = req.body
   const user = await User.findOne({ username })
 

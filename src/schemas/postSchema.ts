@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import Tag from './tagSchema'
 
 const PostSchema = new mongoose.Schema({
   title: {
@@ -22,7 +23,7 @@ const PostSchema = new mongoose.Schema({
   tags: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Tag',
+      ref: Tag,
     },
   ],
   likedUsers: [
@@ -47,6 +48,6 @@ PostSchema.set('toJSON', {
   },
 })
 
-const Post = mongoose.model('Post', PostSchema)
+const BlogPost = mongoose.model('Post', PostSchema, 'posts')
 
-module.exports = Post
+export default BlogPost

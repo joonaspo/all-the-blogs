@@ -9,6 +9,17 @@ export interface User {
   followedUsers?: nonSensitiveUser[]
 }
 
+export interface NewPostEntry {
+  title: string
+  description: string
+  author: string
+  url: string
+  tags: string[]
+  user: string
+  likedUsers?: string[]
+  comments?: string[]
+}
+
 export interface Post {
   id: string
   title: string
@@ -41,3 +52,10 @@ export interface newUser {
 }
 
 export type nonSensitiveUser = Omit<User, 'passwordHash' | 'dateOfBirth'>
+
+export type NewTagEntry = Omit<Tag, 'id'>
+
+export type toNewPostEntry = Omit<
+  NewPostEntry,
+  'user' | 'comments' | 'likedUsers'
+>
