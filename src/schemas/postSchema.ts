@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import Tag from './tagSchema'
+import User from './userSchema'
+import Comment from './commentSchema'
 
 const PostSchema = new mongoose.Schema({
   title: {
@@ -16,9 +18,13 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  date: {
+    type: String,
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: User,
   },
   tags: [
     {
@@ -29,13 +35,13 @@ const PostSchema = new mongoose.Schema({
   likedUsers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: User,
     },
   ],
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment',
+      ref: Comment,
     },
   ],
 })

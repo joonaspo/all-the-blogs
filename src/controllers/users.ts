@@ -7,7 +7,11 @@ const usersRouter = express.Router()
 
 usersRouter.post('/signup', async (req, res) => {
   try {
-    const user = validateUser(req.body)
+    const rawUserObject = {
+      ...req.body,
+      dateOfRegistration: new Date().toISOString().slice(0, 10),
+    }
+    const user = validateUser(rawUserObject)
     const passwordHash = await bcryptjs.hash(user.password, 10)
 
     const newUser = new User({
@@ -15,7 +19,6 @@ usersRouter.post('/signup', async (req, res) => {
       passwordHash,
       displayName: user.displayName,
       dateOfBirth: user.dateOfBirth,
-      dateOfRegistration: user.dateOfRegistration,
     })
     const savedUser = await newUser.save()
     res.status(201).json({ savedUser })

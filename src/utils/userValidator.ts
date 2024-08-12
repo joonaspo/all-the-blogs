@@ -1,7 +1,6 @@
 import { newUser } from '../types'
 import {
-  parseDateOfBirth,
-  parseDateOfRegistration,
+  parseDate,
   parseDisplayName,
   parsePassword,
   parseUsername,
@@ -22,8 +21,8 @@ export const validateUser = (user: unknown): newUser => {
       username: parseUsername(user.username),
       password: parsePassword(user.password),
       displayName: parseDisplayName(user.displayName),
-      dateOfBirth: parseDateOfBirth(user.dateOfBirth),
-      dateOfRegistration: parseDateOfRegistration(user.dateOfRegistration),
+      dateOfBirth: parseDate(user.dateOfBirth),
+      dateOfRegistration: parseDate(user.dateOfRegistration),
     }
     return newEntry
   }

@@ -16,15 +16,12 @@ const saveTags = async (tags: string[]) => {
 
   for (const tag of tags) {
     try {
-      // Check if the tag already exists
       let existingTag = await Tag.findOne({ content: tag })
       if (!existingTag) {
-        // Create and save the new tag if it doesn't exist
         const newTag = new Tag({ content: tag })
         await newTag.save()
         existingTag = newTag
       }
-      // Add the tag's ID to the list
       tagIds.push(existingTag._id.toString())
     } catch (error) {
       console.log(`Error processing tag '${tag}': ${error}`)
@@ -40,11 +37,33 @@ export const createNewPost = async (entry: NewPostEntry) => {
       ...entry,
       tags: tags,
     }
-    console.log(newEntry)
     const newBlogPost = new BlogPost(newEntry)
-    console.log(newBlogPost)
     await newBlogPost.save()
   } catch (error) {
     throw new Error(`Error saving new blog post: ${error}!`)
+  }
+}
+
+export const getPostById = async (id: string) => {
+  try {
+    const blogPost = await BlogPost.findById(id).populate(
+      'user tags comments likedUsers'
+    )
+    return blogPost
+  } catch (error) {
+    throw new Error(`Error fetching blog post: ${error}!`)
+  }
+}
+
+export const addUserToLikedUsers = async (blogId: string, userId: string) => {
+  try {
+    const updatedBlogPost = await BlogPost.findByIdAndUpdate(
+      blogId,
+      { $addToSet: { likedUsers: userId } },
+      { new: true, useFindAndModify: false }
+    )
+    return updatedBlogPost
+  } catch (error) {
+    throw new Error(`Error liking the blog post: ${error}!`)
   }
 }

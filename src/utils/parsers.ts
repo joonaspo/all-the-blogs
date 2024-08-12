@@ -31,20 +31,11 @@ export const parseDisplayName = (displayName: unknown): string => {
   return displayName
 }
 
-export const parseDateOfBirth = (dateOfBirth: unknown): string => {
-  if (!isString(dateOfBirth) || !isDate(dateOfBirth)) {
-    throw new Error('Incorrect or missing date of birth')
+export const parseDate = (date: unknown): string => {
+  if (!isString(date) || !isDate(date)) {
+    throw new Error('Incorrect or missing date' + date)
   }
-  return dateOfBirth
-}
-
-export const parseDateOfRegistration = (
-  dateOfRegistration: unknown
-): string => {
-  if (!isString(dateOfRegistration) || !isDate(dateOfRegistration)) {
-    throw new Error('Incorrect or missing date of registration')
-  }
-  return dateOfRegistration
+  return date
 }
 
 export const parseTitle = (title: unknown): string => {
@@ -67,6 +58,7 @@ export const parseDescription = (desc: unknown): string => {
 
 export const parseUrl = (url: unknown): string => {
   const urlPattern =
+    // eslint-disable-next-line no-useless-escape
     /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?$/i
 
   if (!isString(url) || !urlPattern.test(url)) {

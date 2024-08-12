@@ -18,6 +18,7 @@ export interface NewPostEntry {
   user: string
   likedUsers?: string[]
   comments?: string[]
+  date: string
 }
 
 export interface Post {

@@ -1,6 +1,7 @@
 import { toNewPostEntry } from '../types'
 import {
   parseAuthor,
+  parseDate,
   parseDescription,
   parseTags,
   parseTitle,
@@ -16,7 +17,8 @@ export const validateBlogPost = (blogObject: unknown): toNewPostEntry => {
     'description' in blogObject &&
     'author' in blogObject &&
     'url' in blogObject &&
-    'tags' in blogObject
+    'tags' in blogObject &&
+    'date' in blogObject
   ) {
     const newBlogEntry: toNewPostEntry = {
       title: parseTitle(blogObject.title),
@@ -24,6 +26,7 @@ export const validateBlogPost = (blogObject: unknown): toNewPostEntry => {
       url: parseUrl(blogObject.url),
       author: parseAuthor(blogObject.author),
       tags: parseTags(blogObject.tags),
+      date: parseDate(blogObject.date),
     }
     return newBlogEntry
   }
