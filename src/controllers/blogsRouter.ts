@@ -3,13 +3,27 @@ import { CustomRequest, userExtractor } from '../utils/middleware'
 import {
   addUserToLikedUsers,
   createNewPost,
+  deleteBlog,
   getAllPosts,
   getPostById,
+  searchBlogsByTags,
 } from '../services/postsService'
 import { validateBlogPost } from '../utils/blogPostValidator'
 const blogsRouter = express.Router()
 
-blogsRouter.get('/', async (_req, res) => {
+blogsRouter.get('/searchTags', async (req, res) => {
+  try {
+    const searchParams = req.query.tags as string | string[]
+    const result = await searchBlogsByTags(searchParams)
+    return res.status(200).json(result)
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: `Error searching for posts: ${error}` })
+  }
+})
+
+blogsRouter.get('/all', async (_req, res) => {
   try {
     const data = await getAllPosts()
     return res.status(200).json(data)
@@ -46,8 +60,7 @@ blogsRouter.post('/', userExtractor, async (req: CustomRequest, res) => {
       likedUsers: [],
       comments: [],
     }
-    const addedBlog = createNewPost(blogObject)
-
+    const addedBlog = await createNewPost(blogObject, user)
     return res.status(201).json(addedBlog)
   } catch (error) {
     return res.status(400).json({ error: `Unable to create post: ${error}` })
@@ -75,4 +88,19 @@ blogsRouter.patch('/:id', userExtractor, async (req: CustomRequest, res) => {
   }
 })
 
+blogsRouter.delete('/:id', userExtractor, async (req: CustomRequest, res) => {
+  try {
+    const user = req.user
+    const { id } = req.params
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid token!' })
+    }
+    await deleteBlog(id, user)
+    return res.status(204).end()
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: `Unable to delete the post: ${error}` })
+  }
+})
 export default blogsRouter
