@@ -4,18 +4,17 @@ import {
   addUserToLikedUsers,
   createNewPost,
   deleteBlog,
-  getAllPosts,
+  getBlogs,
   getPostById,
-  searchBlogsByTags,
 } from '../services/postsService'
-import { validateBlogPost } from '../utils/blogPostValidator'
+import { validateBlogPost } from '../utils/validators'
 const blogsRouter = express.Router()
 
-blogsRouter.get('/searchTags', async (req, res) => {
+blogsRouter.get('/', async (req, res) => {
   try {
-    const searchParams = req.query.tags as string | string[]
-    const result = await searchBlogsByTags(searchParams)
-    return res.status(200).json(result)
+    const searchParams = req.query.tag as string | string[]
+    const data = await getBlogs(searchParams)
+    return res.status(200).json(data)
   } catch (error) {
     return res
       .status(400)
@@ -23,22 +22,16 @@ blogsRouter.get('/searchTags', async (req, res) => {
   }
 })
 
-blogsRouter.get('/all', async (_req, res) => {
-  try {
-    const data = await getAllPosts()
-    return res.status(200).json(data)
-  } catch (error) {
-    return res.status(400).json({ error: `Unable to fetch posts: ${error}` })
-  }
-})
-
 blogsRouter.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const data = await getPostById(id)
+    if (!data) {
+      return res.status(404).json({ error: `Post not found!` })
+    }
     return res.status(200).json(data)
   } catch (error) {
-    return res.status(400).json({ error: `Unable to fetch post: ${error}` })
+    return res.status(500).json({ error: `Unable to fetch post: ${error}` })
   }
 })
 
@@ -50,7 +43,7 @@ blogsRouter.post('/', userExtractor, async (req: CustomRequest, res) => {
       date: new Date().toISOString().slice(0, 10),
     }
     const newBlogPost = validateBlogPost(rawBlogObject)
-    console.log(newBlogPost)
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid token!' })
     }
@@ -62,14 +55,19 @@ blogsRouter.post('/', userExtractor, async (req: CustomRequest, res) => {
     }
     const addedBlog = await createNewPost(blogObject, user)
     return res.status(201).json(addedBlog)
-  } catch (error) {
-    return res.status(400).json({ error: `Unable to create post: ${error}` })
+  } catch (error: unknown) {
+    let errorMessage = ''
+    if (error instanceof Error) {
+      errorMessage = 'Error: ' + error.message
+    }
+    return res.status(400).json(errorMessage)
   }
 })
 
 blogsRouter.patch('/:id', userExtractor, async (req: CustomRequest, res) => {
   try {
     const user = req.user
+    console.log(user)
     if (!user) {
       return res.status(401).json({ error: 'Invalid token!' })
     }
@@ -103,4 +101,5 @@ blogsRouter.delete('/:id', userExtractor, async (req: CustomRequest, res) => {
       .json({ error: `Unable to delete the post: ${error}` })
   }
 })
+
 export default blogsRouter

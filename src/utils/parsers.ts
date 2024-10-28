@@ -25,8 +25,10 @@ export const parsePassword = (password: unknown): string => {
 }
 
 export const parseDisplayName = (displayName: unknown): string => {
-  if (!isString(displayName)) {
-    throw new Error('Incorrect or missing display name')
+  if (!isString(displayName) || displayName.length < 3) {
+    throw new Error(
+      'Incorrect or missing display name! Display name must be at least 3 characters long.'
+    )
   }
   return displayName
 }
@@ -82,6 +84,10 @@ export const parseTags = (tags: unknown): string[] => {
 
   if (!isArrayOfStrings(tags)) {
     throw new Error('Tags must be an array of strings.')
+  }
+
+  if (tags.length < 1) {
+    throw new Error('Enter at least one tag.')
   }
 
   tags.forEach((tag: string) => {

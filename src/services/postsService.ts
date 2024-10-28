@@ -1,20 +1,11 @@
-import mongoose, { Types } from 'mongoose'
+import { Types } from 'mongoose'
 import BlogPost from '../schemas/postSchema'
 import Tag from '../schemas/tagSchema'
-import { NewPostEntry, User } from '../types'
+import { NewPostEntry, BaseUser } from '../types'
 
-export const getAllPosts = async () => {
-  try {
-    const data = await BlogPost.find().populate('user tags')
-    return data
-  } catch (error) {
-    throw new Error(`Unable to fetch posts! ${error}`)
-  }
-}
-
-const saveTags = async (tags: string[]) => {
+const saveTags = async (tagsParams: string[]) => {
   const tagIds: string[] = []
-
+  const tags = tagsParams.map((tag) => tag.toLowerCase())
   for (const tag of tags) {
     try {
       let existingTag = await Tag.findOne({ content: tag })
@@ -25,13 +16,13 @@ const saveTags = async (tags: string[]) => {
       }
       tagIds.push(existingTag._id.toString())
     } catch (error) {
-      console.log(`Error processing tag '${tag}': ${error}`)
+      throw new Error(`Error processing tag '${tag}': ${error}`)
     }
   }
   return tagIds
 }
 
-export const createNewPost = async (entry: NewPostEntry, user: User) => {
+export const createNewPost = async (entry: NewPostEntry, user: BaseUser) => {
   try {
     const tags = await saveTags(entry.tags)
     const newEntry = {
@@ -72,20 +63,33 @@ export const addUserToLikedUsers = async (blogId: string, userId: string) => {
   }
 }
 
-export const searchBlogsByTags = async (tagParams: string | string[]) => {
+export const getBlogs = async (tagParams: string | string[]) => {
   try {
-    const tags: string[] = Array.isArray(tagParams) ? tagParams : [tagParams]
-    const tagIds: Types.ObjectId[] = tags.map(
-      (tag) => new mongoose.Types.ObjectId(tag)
-    )
-    const result = await BlogPost.find({ tags: { $in: tagIds } })
-    return result
+    const tagsArray: string[] = Array.isArray(tagParams)
+      ? tagParams
+      : [tagParams]
+
+    if (!tagParams) {
+      const data = await BlogPost.find()
+        .populate({ path: 'user', select: 'username displayName' })
+        .populate('tags')
+      return data
+    } else {
+      const tags = tagsArray.map((tag) => tag.toLowerCase())
+      const tagDocuments = await Tag.find({ content: { $in: tags } })
+      const tagIds: Types.ObjectId[] = tagDocuments.map((tag) => tag._id)
+
+      const data = await BlogPost.find({ tags: { $in: tagIds } })
+        .populate({ path: 'user', select: 'username displayName' })
+        .populate('tags')
+      return data
+    }
   } catch (error) {
     throw new Error(`Error searching with tags: ${error}!`)
   }
 }
 
-export const deleteBlog = async (blogId: string, user: User) => {
+export const deleteBlog = async (blogId: string, user: BaseUser) => {
   try {
     const blog = await BlogPost.findById(blogId)
     if (!blog) {

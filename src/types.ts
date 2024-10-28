@@ -1,4 +1,4 @@
-export interface User {
+export interface BaseUser {
   save(): unknown
   id: string
   username: string
@@ -34,10 +34,9 @@ export interface Post {
   comments?: Comment[]
 }
 
-export interface Comment {
+export interface ToNewCommentEntry {
   content: string
-  user: nonSensitiveUser
-  date: string
+  date: Date
 }
 
 export interface SearchTag {
@@ -53,7 +52,7 @@ export interface newUser {
   dateOfRegistration: string
 }
 
-export type nonSensitiveUser = Omit<User, 'passwordHash' | 'dateOfBirth'>
+export type nonSensitiveUser = Omit<BaseUser, 'passwordHash' | 'dateOfBirth'>
 
 export type NewTagEntry = Omit<SearchTag, 'id'>
 
@@ -61,3 +60,12 @@ export type toNewPostEntry = Omit<
   NewPostEntry,
   'user' | 'comments' | 'likedUsers'
 >
+
+export interface Comment extends ToNewCommentEntry {
+  id: string
+  user: nonSensitiveUser
+}
+
+export interface NewCommentEntry extends ToNewCommentEntry {
+  user: string
+}
