@@ -41,10 +41,32 @@ export const createNewPost = async (entry: NewPostEntry, user: BaseUser) => {
 
 export const getPostById = async (id: string) => {
   try {
-    const result = await BlogPost.findById(id).populate(
-      'user tags comments likedUsers'
-    )
+    const result = await BlogPost.findById(id)
+      .populate('tags')
+      .populate({
+        path: 'likedUsers',
+        select: 'username displayName',
+      })
+      .populate({
+        path: 'user',
+        select: 'username displayName',
+      })
     return result
+  } catch (error) {
+    throw new Error(`Error fetching blog post: ${error}!`)
+  }
+}
+
+export const getCommentsById = async (id: string) => {
+  try {
+    const result = await BlogPost.findById(id).populate({
+      path: 'comments',
+      populate: {
+        path: 'user',
+        select: 'username displayName',
+      },
+    })
+    return result?.comments
   } catch (error) {
     throw new Error(`Error fetching blog post: ${error}!`)
   }

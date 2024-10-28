@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import Tag from './tagSchema'
 import User from './userSchema'
-import Comment from './commentSchema'
 
 const PostSchema = new mongoose.Schema({
   title: {
@@ -41,7 +40,7 @@ const PostSchema = new mongoose.Schema({
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: Comment,
+      ref: 'Comment',
     },
   ],
 })

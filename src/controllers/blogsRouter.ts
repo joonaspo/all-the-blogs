@@ -5,6 +5,7 @@ import {
   createNewPost,
   deleteBlog,
   getBlogs,
+  getCommentsById,
   getPostById,
 } from '../services/postsService'
 import { validateBlogPost } from '../utils/validators'
@@ -29,6 +30,21 @@ blogsRouter.get('/:id', async (req, res) => {
     if (!data) {
       return res.status(404).json({ error: `Post not found!` })
     }
+    return res.status(200).json(data)
+  } catch (error) {
+    return res.status(500).json({ error: `Unable to fetch post: ${error}` })
+  }
+})
+
+blogsRouter.get('/:id/comments', async (req, res) => {
+  try {
+    const { id } = req.params
+    const data = await getCommentsById(id)
+    console.log(data)
+    if (!data) {
+      return res.status(404).json({ error: `Post not found!` })
+    }
+    console.log('')
     return res.status(200).json(data)
   } catch (error) {
     return res.status(500).json({ error: `Unable to fetch post: ${error}` })
