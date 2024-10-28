@@ -25,24 +25,77 @@ export const parsePassword = (password: unknown): string => {
 }
 
 export const parseDisplayName = (displayName: unknown): string => {
-  if (!isString(displayName)) {
-    throw new Error('Incorrect or missing display name')
+  if (!isString(displayName) || displayName.length < 3) {
+    throw new Error(
+      'Incorrect or missing display name! Display name must be at least 3 characters long.'
+    )
   }
   return displayName
 }
 
-export const parseDateOfBirth = (dateOfBirth: unknown): string => {
-  if (!isString(dateOfBirth) || !isDate(dateOfBirth)) {
-    throw new Error('Incorrect or missing date of birth')
+export const parseDate = (date: unknown): string => {
+  if (!isString(date) || !isDate(date)) {
+    throw new Error('Incorrect or missing date' + date)
   }
-  return dateOfBirth
+  return date
 }
 
-export const parseDateOfRegistration = (
-  dateOfRegistration: unknown
-): string => {
-  if (!isString(dateOfRegistration) || !isDate(dateOfRegistration)) {
-    throw new Error('Incorrect or missing date of registration')
+export const parseTitle = (title: unknown): string => {
+  if (!isString(title) || title.length < 5) {
+    throw new Error(
+      'Incorrect or missing title! Title must be at least 5 characters long.'
+    )
   }
-  return dateOfRegistration
+  return title
+}
+
+export const parseDescription = (desc: unknown): string => {
+  if (!isString(desc) || desc.length < 5) {
+    throw new Error(
+      'Incorrect or missing description! Description must be at least 5 characters long.'
+    )
+  }
+  return desc
+}
+
+export const parseUrl = (url: unknown): string => {
+  const urlPattern =
+    // eslint-disable-next-line no-useless-escape
+    /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?$/i
+
+  if (!isString(url) || !urlPattern.test(url)) {
+    throw new Error('Incorrect or missing URL! URL must be a valid format.')
+  }
+  return url
+}
+
+export const parseAuthor = (author: unknown): string => {
+  if (!isString(author) || author.length < 5) {
+    throw new Error(
+      'Incorrect or missing author! Author must be at least 5 characters long.'
+    )
+  }
+  return author
+}
+
+export const parseTags = (tags: unknown): string[] => {
+  const isArrayOfStrings = (value: unknown): value is string[] =>
+    Array.isArray(value) && value.every(isString)
+
+  if (!isArrayOfStrings(tags)) {
+    throw new Error('Tags must be an array of strings.')
+  }
+
+  if (tags.length < 1) {
+    throw new Error('Enter at least one tag.')
+  }
+
+  tags.forEach((tag: string) => {
+    if (tag.length < 3) {
+      throw new Error(
+        'Incorrect or missing tag! Tag must be at least 3 characters long.'
+      )
+    }
+  })
+  return tags
 }

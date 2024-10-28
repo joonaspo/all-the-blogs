@@ -5,6 +5,7 @@ const TagSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    minLength: 3,
   },
 })
 
@@ -16,6 +17,6 @@ TagSchema.set('toJSON', {
   },
 })
 
-const Tag = mongoose.model('Tag', TagSchema)
+const Tag = mongoose.model('Tag', TagSchema, 'tags')
 
-module.exports = Tag
+export default Tag

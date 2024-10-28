@@ -1,12 +1,12 @@
-import { User } from '../types'
+import { BaseUser } from '../types'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { SECRET } from './config'
+import { ACCESS_TOKEN_SECRET } from './config'
 import { NextFunction, Request, Response } from 'express'
 import UserSchema from '../schemas/userSchema'
 
 export interface CustomRequest extends Request {
   token?: string | null
-  user?: User | null
+  user?: BaseUser | null
 }
 
 export const tokenExtractor = (
@@ -31,7 +31,10 @@ export const userExtractor = async (
 ) => {
   try {
     if (req.token) {
-      const decodedToken = jwt.verify(req.token, SECRET as string) as JwtPayload
+      const decodedToken = jwt.verify(
+        req.token,
+        ACCESS_TOKEN_SECRET as string
+      ) as JwtPayload
 
       if (!decodedToken || !decodedToken.id) {
         req.user = null

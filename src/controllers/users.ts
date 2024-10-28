@@ -1,33 +1,42 @@
 import bcryptjs from 'bcryptjs'
 import express from 'express'
 import User from '../schemas/userSchema'
-import { validateUser } from '../utils/userValidator'
 import { CustomRequest, userExtractor } from '../utils/middleware'
+import { validateUser } from '../utils/validators'
 const usersRouter = express.Router()
 
 usersRouter.post('/signup', async (req, res) => {
   try {
-    const user = validateUser(req.body)
+    const rawUserObject = {
+      ...req.body,
+      dateOfRegistration: new Date().toISOString().slice(0, 10),
+    }
+    const user = validateUser(rawUserObject)
     const passwordHash = await bcryptjs.hash(user.password, 10)
 
     const newUser = new User({
       username: user.username,
-      passwordHash,
       displayName: user.displayName,
+      passwordHash,
       dateOfBirth: user.dateOfBirth,
       dateOfRegistration: user.dateOfRegistration,
     })
+
     const savedUser = await newUser.save()
-    res.status(201).json({ savedUser })
-  } catch (error) {
-    console.error('Error creating user:', error)
-    res.status(500).json({ error: 'Internal server error' })
+
+    return res.status(201).json(savedUser)
+  } catch (error: unknown) {
+    let errorMessage = ''
+    if (error instanceof Error) {
+      errorMessage = 'Error: ' + error.message
+    }
+    return res.status(500).json(errorMessage)
   }
 })
 
 usersRouter.patch('/change', userExtractor, async (req: CustomRequest, res) => {
-  const user = req.user
   try {
+    const user = req.user
     const { newPassword } = req.body
     if (!newPassword) {
       return res.status(400).json({ error: 'Password is required' })
@@ -42,9 +51,11 @@ usersRouter.patch('/change', userExtractor, async (req: CustomRequest, res) => {
 
     return res.status(200).json({ message: 'Successfully changed password!' })
   } catch (error) {
-    return res
-      .status(400)
-      .json({ error: `Unable to change password: ${error}!` })
+    let errorMessage = ''
+    if (error instanceof Error) {
+      errorMessage = 'Error: ' + error.message
+    }
+    return res.status(500).json(errorMessage)
   }
 })
 
