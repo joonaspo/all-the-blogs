@@ -19,6 +19,8 @@ commentsRouter.post(
         ...req.body,
         date: new Date(),
       }
+      console.log(req.body)
+      console.log(commentObject)
       const newComment = validateComment(commentObject)
       const comment = {
         ...newComment,

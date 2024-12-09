@@ -59,4 +59,21 @@ usersRouter.patch('/change', userExtractor, async (req: CustomRequest, res) => {
   }
 })
 
+usersRouter.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const user = await User.findById(id)
+
+      .select('username displayName dateOfRegistration')
+      .populate({ path: 'madePosts', select: 'title' })
+    return res.status(200).json(user)
+  } catch (error) {
+    let errorMessage = ''
+    if (error instanceof Error) {
+      errorMessage = 'Error: ' + error.message
+    }
+    return res.status(500).json(errorMessage)
+  }
+})
+
 export default usersRouter
