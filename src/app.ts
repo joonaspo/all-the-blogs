@@ -3,7 +3,7 @@ const app = express()
 import cors from 'cors'
 import utilRouter from './controllers/utilRouter'
 import connectToDB from './services/dbServer'
-import usersRouter from './controllers/users'
+import usersRouter from './controllers/usersRouter'
 import loginRouter from './controllers/loginRouter'
 import { tokenExtractor } from './utils/middleware'
 import blogsRouter from './controllers/blogsRouter'
